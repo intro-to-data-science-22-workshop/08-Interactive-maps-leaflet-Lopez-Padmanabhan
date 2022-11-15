@@ -1,4 +1,4 @@
-# Working with dplyr
+# Interactive maps with leaflet!
 
 
 ## Summary
@@ -7,24 +7,24 @@ This repository provides materials for a session that is part of the [I2DS Tools
 
 ### Session contents
 
-This session will introduce you to the modern data wrangling workflow with R and dplyr. Data wrangling is one of the core steps in the data science workflow. dplyr is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges, including the manipulation of datasets and variables. 
+This session will introduce you to the vibrant world of interactive maps with R and leaflet. Interactive maps are an interesting way to visualize datasets in a base map and to discover geographical data patterns. 
 
 ### Main learning objectives
 
-The goals of this session are to (1) equip you with conceptual knowledge about the dplyr package and data wrangling workflow, (2) show you the three key verbs of the pacakge, and (3) provide you with practice material as well as some further readings.
+The goals of this session are to (1) equip you with conceptual knowledge about the leaflet package and map-making basics, (2) show you key functions to make an interactive map, and (3) provide you with practice material as well as some further readings and data sources.
 
 
 ## Instructors
 
-- Simon Munzert ([website](http://simonmunzert.github.io/), [twitter](https://twitter.com/simonsaysnothin))
-- Kermit the Frog ([website](https://en.wikipedia.org/wiki/Kermit_the_Frog), [twitter](https://twitter.com/KermitTheFrog))
+- Daniel López ([twitter](https://twitter.com/DanielFLopezP))
+- Siddharth Padmanabhan 
 
 
 ## Further resources
 
-- [dplyr overview at dplyr.tidyverse.org](https://dplyr.tidyverse.org/)
-- [Hands-on dplyr tutorial by Data School on YouTube](https://www.youtube.com/watch?v=jWjqLW-u3hc)
-- [R for Data Science book - part on data wrangling](https://r4ds.had.co.nz/wrangle-intro.html)
+- [leaflet overview](https://rstudio.github.io/leaflet/)
+- [leaflet package cheat sheet](https://ugoproto.github.io/ugo_r_doc/pdf/leaflet-cheat-sheet.pdf)
+- [Base maps repository, Database of Global Administrative Areas](https://gadm.org/)
 
 
 ## License
@@ -33,6 +33,6 @@ The material in this repository is made available under the [MIT license](http:/
 
 ## Statement of contributions
 
-**Simon Munzert** prepared the practice material and post-processed the recording.
+**Daniel López** prepared the practice material and the second half of the presentation slides.
 
-**Kermit the Frog** prepared the presentation slides and recording. He also provided an example to the practice material.
+**Siddharth Padmanabhan** prepared the first half of the presentation slides and the complete recording. 
