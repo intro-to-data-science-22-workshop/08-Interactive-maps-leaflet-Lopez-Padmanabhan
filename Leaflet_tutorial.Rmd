@@ -1,0 +1,245 @@
+---
+title: "Leaflet live tutorial"
+subtitle: "How to do interactive election maps"
+
+
+output: 
+  html_document:
+    toc: TRUE
+    df_print: paged
+    number_sections: FALSE
+    highlight: tango
+    theme: lumen
+    toc_depth: 3
+    toc_float: true
+    css: custom.css 
+    self_contained: false
+    
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(digits=2)
+
+# save the built-in output hook
+hook_output <- knitr::knit_hooks$get("output")
+
+# set a new output hook to truncate text output
+knitr::knit_hooks$set(output = function(x, options) {
+  if (!is.null(n <- options$out.lines)) {
+    x <- xfun::split_lines(x)
+    if (length(x) > n) {
+      # truncate the output
+      x <- c(head(x, n), "....\n")
+    }
+    x <- paste(x, collapse = "\n")
+  }
+  hook_output(x, options)
+})
+
+colorise <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{%s}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'>%s</span>", color,
+      x)
+  } else x
+}
+
+
+```
+***
+Welcome! 
+
+After the wonderful introduction to the `leaflet` package, it is time to put all this knowledge into practice. We will show you how to: 
+
+* upload the necessary files to create the interactive map
+* organize the data with `dplyr`
+* configure a palette of colours and the corresponding labels
+* put all those elements together in an awesome interactive map!
+
+We are going to create an election map using the features learned in the presentation. This is going to be a replication of the presidential election in 2016 in Pennsylvania.
+
+***
+# Setup
+
+First things first. We need to lead the leaflet package with other few ones that will make our task easier. Also, we need to get the data and the base map.  
+
+```{r, message=F, comment=F}
+library(leaflet)
+library(tidyverse)
+library(htmltools)
+library(rgdal)
+library(sf)
+library(scales)
+library(glue)
+
+# Importing the data set
+pa_election_2016 <- read_csv("pa_2016_presidential.csv")
+head(pa_election_2016, 5)
+
+# Importing the base map
+pa_map <- sf::st_read("PaCounty2020_08/PaCounty2020_08.shp", 
+                      stringsAsFactors = FALSE)
+```
+
+***
+
+# Tidying the data
+
+Nothing out of the ordinary, isn't it? Well...
+
+With the power of `dplyr`, we should check if the county names coincide in both files, and then change it to prepare the data for the interactive map.
+
+## Modifying the variables
+
+First change the column names to match both data sets: 
+
+```{r}
+pa_map <- pa_map %>% 
+            rename(County = COUNTY_NAM)
+head(pa_map, 5)
+```
+
+Are the county names exactly the same in both datasets? Let's check it out!
+
+```{r}
+problems <- anti_join(pa_map, pa_election_2016, by = "County")
+head(problems[,1:3])
+
+```
+This county is written in ful upper cases in the base map, but as "McKEAN" in the elections dataset.
+
+Let's change the name in the election dataset!
+
+```{r}
+pa_election_2016$County <- recode(pa_election_2016$County, 
+                                  McKEAN = "MCKEAN")
+
+ # Check again for inconsistencies in names
+anti_join(pa_map, pa_election_2016, by = "County")
+
+```
+
+# Merging the data and final adjustments
+
+With the county names checked, it is time to merge the base map and the electoral data set into one. Also, we must do some final adjustments.
+
+```{r}
+pa_map_2016 <- full_join(pa_map, pa_election_2016, by = "County")
+
+# Change the turnout proportion of each candidate to percentages
+
+pa_map_2016 <- pa_map_2016 %>% 
+                  mutate(TrumpPct = TrumpPct*100) %>% 
+                  mutate(ClintonPct = ClintonPct*100)
+
+# Change the projection to match the one leaflet tiles uses (WGS84)
+
+pa_map_2016 <- st_transform(pa_map_2016, "+proj=longlat +datum=WGS84")
+
+
+
+```
+
+***
+
+# Interactive map time!
+
+Let's map the percentage differences between Trump and Clinton in each county. As it is more complicated to include negative values on the map, we will play with the positive margins for each candidate separately and then merge it into 
+the same map.
+
+**Step 1**: Create a palette for each candidate
+
+```{r}
+trump_palette <- colorNumeric(palette = "Reds", 
+                              domain = pa_map_2016$PctMargin)
+clinton_palette <- colorNumeric(palette = "Blues", 
+                                domain = pa_map_2016$PctMargin)
+
+
+```
+
+**Step 2**: create two separated data frames, one for each candidate.
+
+```{r}
+trump_df <- pa_map_2016 %>% 
+                filter(Winner == "Trump")
+clinton_df <- pa_map_2016 %>% 
+                filter(Winner == "Clinton")
+
+```
+
+**Step 3**: create the pop-ups with the corresponding labels.
+
+We will use the `htmltools` package to create the pop-ups for each candidate.
+
+```{r}
+trump_popup <- glue("<strong>{trump_df$County} COUNTY</strong><br />
+                    <strong>Winner: Trump</strong><br />
+                    Trump: {scales::comma(trump_df$Trump, accuracy = 1)}<br />
+                    TrumpPct: {scales::comma(trump_df$TrumpPct, accuracy = 1)}<br />
+                    Clinton: {scales::comma(trump_df$Clinton, accuracy = 1)}<br />
+                    ClintonPct: {scales::comma(trump_df$ClintonPct, accuracy = 1)}<br />
+                    Margin: {scales::comma(trump_df$PctMargin, accuracy = 1)}")  %>%   
+  lapply(htmltools::HTML)
+
+clinton_popup <- glue("<strong>{clinton_df$County} COUNTY</strong><br />
+                      <strong>Winner: Clinton</strong><br />
+                      Clinton: {scales::comma(clinton_df$Clinton, accuracy = 1)}<br />
+                      ClintonPct: {scales::comma(clinton_df$ClintonPct, accuracy = 1)}<br />
+                      Trump: {scales::comma(clinton_df$Trump, accuracy = 1)}<br />
+                      TrumpPct: {scales::comma(clinton_df$TrumpPct, accuracy = 1)}<br />
+                      Margin: {scales::comma(clinton_df$PctMargin, accuracy = 1)}")  %>%   
+  lapply(htmltools::HTML)
+```
+
+**Step 4**: create the map by adding the polygons for each candidate.
+
+```{r}
+leaflet() %>%
+  addProviderTiles("OpenTopoMap") %>%
+  addPolygons(
+    data = trump_df,
+    fillColor = ~trump_palette(trump_df$PctMargin),
+    label = trump_popup,
+    stroke = TRUE,
+    smoothFactor = 0.2,
+    fillOpacity = 0.8,
+    color = "#666",
+    weight = 1
+  ) %>%
+  addPolygons(
+    data = clinton_df,
+    fillColor = ~clinton_palette(clinton_df$PctMargin),
+    label = clinton_popup,
+    stroke = TRUE,
+    smoothFactor = 0.2,
+    fillOpacity = 0.8,
+    color = "#666",
+    weight = 1
+  )
+
+```
+
+
+**Disclaimer**: Only downside with this method: it is almost impossible to add a legend as the addLegend function cannot identify simultaneously values from two different data frames.
+
+***
+
+# Exercise
+
+Now that you know how to do cool interactive maps, it is your turn to create your map with the data and base maps we provided you in this workshop. Keep it simple and have fun! 
+
+```{r}
+# PUT YOUR CODE HERE
+
+
+
+```
+
+***
+
+#Sources
+
+This tutorial drew heavily and was adapted from this demo by [_Sharon Machlis_](https://www.infoworld.com/article/3586147/how-to-create-an-election-map-in-r.html)
