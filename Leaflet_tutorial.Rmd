@@ -240,6 +240,6 @@ Now that you know how to do cool interactive maps, it is your turn to create you
 
 ***
 
-#Sources
+# Sources
 
-This tutorial drew heavily and was adapted from this demo by [_Sharon Machlis_](https://www.infoworld.com/article/3586147/how-to-create-an-election-map-in-r.html)
+This tutorial drew heavily and was adapted from this demonstration by [_Sharon Machlis_](https://www.infoworld.com/article/3586147/how-to-create-an-election-map-in-r.html)
