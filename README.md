@@ -25,6 +25,7 @@ The goals of this session are to (1) equip you with conceptual knowledge about t
 - [leaflet overview](https://rstudio.github.io/leaflet/)
 - [leaflet package cheat sheet](https://ugoproto.github.io/ugo_r_doc/pdf/leaflet-cheat-sheet.pdf)
 - [Base maps repository, Database of Global Administrative Areas](https://gadm.org/)
+- [Complete set of third party tiles](http://leaflet-extras.github.io/leaflet-providers/preview/index.html)
 
 
 ## License
@@ -33,6 +34,6 @@ The material in this repository is made available under the [MIT license](http:/
 
 ## Statement of contributions
 
-**Daniel López** prepared the practice material and the second half of the presentation slides.
+**Daniel López** prepared the practice material and the last seven slides of the presentation slides.
 
-**Siddharth Padmanabhan** prepared the first half of the presentation slides and the complete recording. 
+**Siddharth Padmanabhan** prepared the first eleven slides of the presentation slides and the complete recording. 
