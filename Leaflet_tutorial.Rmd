@@ -229,7 +229,17 @@ leaflet() %>%
 
 # Exercise
 
-Now that you know how to do cool interactive maps, it is your turn to create your map with the data and base maps we provided you in this workshop. Keep it simple and have fun! 
+## Choose your fighter!
+
+Now that you know how to do cool interactive maps, it is your turn to create your map with the data and base maps we provided you in this workshop. 
+
+We have data from (you will need the `readxl` package to open the data):
+
+* Peru 
+* Colombia (you need to download the base map from the release section that is on the right of the repository with the tag **BaseMap**)
+* Germany
+
+Keep it simple and have fun! 
 
 ```{r}
 # PUT YOUR CODE HERE
